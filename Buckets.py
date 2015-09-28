@@ -156,15 +156,12 @@ def reroll(illegal):
 class Buckets: #initialize a bucket game
     
     def __init__(self: 'Buckets') -> None:
-        self.m = randint(1,9)
-        self.n = randint(1,9)
-        if self.n == self.m:
+        self.m = randint(1,10)
+        self.n = randint(1,10)
+        if (self.n == self.m):
             self.n = reroll(self.m)
-        
-        if (self.m < self.n):
-            self.k = randint(self.m,self.n)
-        else:
-            self.k = randint(self.n,self.m)
+        maximum = max(self.m,self.n)
+        self.k = randint(1,maximum)
         self.path = Stack()
         self.path = BFS((0,0), self.path, self.m, self.n, self.k)
         self.optimal_moves = len(self.path.stack) - 1
@@ -172,6 +169,31 @@ class Buckets: #initialize a bucket game
         self.move_counter = 0
         self.m_frac = (self.m)/(self.state[0]) if self.state[0] != 0 else 0
         self.n_frac = (self.n)/(self.state[1]) if self.state[1] != 0 else 0
+        if (self.optimal_moves== -1):
+            self.fix()
+        if (self.k == self.m) or (self.k == self.n):
+            self.fix()
+    
+    def fix(self):
+        self.m = randint(1,10)
+        self.n = randint(1,10)
+        if (self.n == self.m):
+            self.n = reroll(self.m)
+        maximum = max(self.m,self.n)
+        self.k = randint(1,maximum)
+        self.path = Stack()
+        self.path = BFS((0,0), self.path, self.m, self.n, self.k)
+        self.optimal_moves = len(self.path.stack) - 1
+        if (self.optimal_moves == -1):
+            self.fix()
+        elif (self.k == self.m) or (self.k == self.n):
+            self.fix()        
+        else:
+            self.state = (0,0)
+            self.move_counter = 0
+            self.m_frac = (self.m)/(self.state[0]) if self.state[0] != 0 else 0
+            self.n_frac = (self.n)/(self.state[1]) if self.state[1] != 0 else 0
+            
     
     def re_frac(self):
         self.m_frac = (self.m)/(self.state[0]) if self.state[0] != 0 else 0

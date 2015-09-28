@@ -2,6 +2,8 @@
 
 from Buckets import *
 from tkinter import *
+from GUIControls import *
+from PIL import Image, ImageTk
 
 class ObjectView:
     
@@ -67,12 +69,18 @@ class WidgetView(ObjectView):
     
     def __init__(self: 'WidgetView', height: float, width: float,
                  x_mid: float, y_mid: float, onclick: (lambda Event: None), 
-                 canvas: Canvas, widget_type: float):
+                 canvas: Canvas, widget_type: float,root=None):
         self.widget_type = widget_type
         ObjectView.__init__(self, height, width, x_mid, y_mid,
                               onclick, canvas)
         if widget_type == 0: #water
-            self.canvas.itemconfigure(self.index, fill='blue')        
+            #pilImage = Image.open("water1.jpg")
+           # image = ImageTk.PhotoImage(pilImage)
+           # self.canvas.create_image(0,0,image=image)
+           # if root:
+            #    root.mainloop()
+            self.canvas.itemconfigure(self.index, fill='blue')
+            
         else: #pipe
             self.canvas.itemconfigure(self.index, fill='green')  
             
@@ -82,12 +90,13 @@ class WaterView:
                  x_mid: float, y_mid: float,                 
                  onclick: (lambda Event: None), canvas: Canvas):
 
+        
         self.canvas = canvas
         self.height = height
         self.width = width
         self.x_mid = x_mid
         self.y_mid = y_mid
-
+       
         self.index = canvas.create_rectangle(0, 0, 0, 0)
         self.canvas.itemconfig(self.index)
 
@@ -112,3 +121,40 @@ class WaterView:
         # record new center
         self.x_mid = x_mid
         self.y_mid = y_mid
+        
+class ButtonView:
+    
+    def __init__(self: 'ButtonView', height: float, width: float, 
+                 x_mid: float, y_mid: float,                 
+                 onclick: (lambda Event: None), canvas: Canvas):
+
+        self.canvas = canvas
+        self.height = height
+        self.width = width
+        self.x_mid = x_mid
+        self.y_mid = y_mid
+
+        self.index = canvas.create_rectangle(0, 0, 0, 0)
+        self.canvas.itemconfig(self.index)
+
+        self.place(x_mid, y_mid)
+        self.canvas.itemconfigure(self.index, fill='Orange') 
+
+
+        canvas.tag_bind(self.index,
+                        '<ButtonRelease>',
+                        lambda _: onclick(self))          
+    
+    def remove(self: 'ButtonView'):
+        self.canvas.delete(self.index)
+    def place(self: 'ObjectView', x_mid: float,
+              y_mid: float):
+    
+        self.canvas.coords(self.index,
+                           (x_mid - self.width // 2),
+                           (y_mid - self.height // 2),
+                           (x_mid + self.width // 2),
+                           (y_mid + self.height // 2))
+        # record new center
+        self.x_mid = x_mid
+        self.y_mid = y_mid    
